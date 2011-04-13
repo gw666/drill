@@ -1,5 +1,4 @@
-(ns drill.core
-  (:use [clojure.contrib.str-utils2 :only (get tail)]))
+(ns drill.core)
 
 (def front-words-pairs
   [
@@ -55,19 +54,35 @@
   (let [fw (nth fw-pair 0)
 	v  (nth v-pair 0)
 	fw-spanish (nth fw-pair 1)
+	first-char-spanish (subs fw-spanish 0 1)
+	end-char-english (if (= first-char-spanish \¿) "?" ".")
+	]
+    (printf "%s %s%s\n" fw v end-char-english)))
+    
+(defn simple-frontwords-verb-answer [fw-pair v-pair]
+  (let [fw (nth fw-pair 0)
+	v  (nth v-pair 0)
+	fw-spanish (nth fw-pair 1)
 	v-spanish  (nth v-pair 1)
 	first-char-spanish (get fw-spanish 0)
-	end-char-either (if (= first-char-spanish \¿) "?" ".")
+	end-char-spanish (if (= first-char-spanish \¿) "?" ".")
 	]
-    (swank.core/break)))
-    
+    (printf "%s %s%s\n" fw-spanish
+	    v-spanish end-char-spanish)))
+
 (defn -main []
-  (println "1. generated test question goes here") ;randomized drill item printed
-  (let [feedback (read-line)]
-    (print "2. input from keyboard is: '" feedback "'\n")
-    ;; continues if user hits ENTER; to exit, type something
-    (if-let [result (not (= feedback [""]))]
-      (print "3a. input was '" feedback "'--my signal to EXIT PROGRAM\n")
-      (do
-	(println "3b. question answer goes here\n\n") ;answer, if given, printed here
-	(recur)))))
+  (let [result (atom "")]
+    (print "after initial let, result is'" @result "'\n")
+    (while (= "" @result)
+    (let [fw-pair (rand-nth front-words-pairs)
+	  v-pair  (rand-nth verb-pairs)]
+      (simple-frontwords-verb-question fw-pair v-pair) ;print question
+      (reset! result (read-line)) ;user enters text+Return or Return
+      (print "after read-line, result is'" @result "'\n")
+      (simple-frontwords-verb-answer fw-pair v-pair) ;print answer
+      )) ;end of while
+    ))
+
+(-main)
+
+
