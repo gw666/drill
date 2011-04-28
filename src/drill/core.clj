@@ -1,10 +1,13 @@
+(ns clojure.core)
+(def *flush-on-newline* true)
+
 (ns drill.core)
 
 (def front-words-pairs
   [
    ["Please"	"Favor de"]
    ["Don't"	"No"]
-   ["You have to"	"Tiene"]
+   ["You have to"	"Tiene que"]
    ["You must"	"Debe"]
    ["I'm going to"	"Voy a"]
    ["You need to"	"Necesita"]
@@ -13,7 +16,7 @@
    ["Do you like to"	"¿Le gusta"]
    ["Do you prefer to"	"¿Prefiere"]
    ["I would like to"	"Quisiera"]
-   ["Let's"	"Vamos"]
+   ["Let's"	"Vamos a"]
    ["Could you"	"¿Podría"]
    ])
 
@@ -54,10 +57,12 @@
   (let [fw (nth fw-pair 0)
 	v  (nth v-pair 0)
 	fw-spanish (nth fw-pair 1)
-	first-char-spanish (subs fw-spanish 0 1)
+	first-char-spanish (get fw-spanish 0 1)
 	end-char-english (if (= first-char-spanish \¿) "?" ".")
 	]
-    (printf "%s %s%s\n" fw v end-char-english)))
+;;    (swank.core/break)
+    (printf "%s %s%s\n" fw v end-char-english)
+    (flush)))
     
 (defn simple-frontwords-verb-answer [fw-pair v-pair]
   (let [fw (nth fw-pair 0)
@@ -68,21 +73,23 @@
 	end-char-spanish (if (= first-char-spanish \¿) "?" ".")
 	]
     (printf "%s %s%s\n" fw-spanish
-	    v-spanish end-char-spanish)))
+	    v-spanish end-char-spanish)
+    (flush)))
 
 (defn -main []
   (let [result (atom "")]
-    (print "after initial let, result is'" @result "'\n")
+;    (println "after initial let, result is'" @result "'")
     (while (= "" @result)
     (let [fw-pair (rand-nth front-words-pairs)
 	  v-pair  (rand-nth verb-pairs)]
       (simple-frontwords-verb-question fw-pair v-pair) ;print question
       (reset! result (read-line)) ;user enters text+Return or Return
-      (print "after read-line, result is'" @result "'\n")
+;      (println "after read-line, result is'" @result "'")
       (simple-frontwords-verb-answer fw-pair v-pair) ;print answer
+      (println "\n\n\n\n\n\n\n\n\n\n\n\n.......................................................")
       )) ;end of while
     ))
 
-(-main)
+ (-main)
 
 
